@@ -73,11 +73,20 @@ if run_forecast:
 
     profile_url = f"https://codeforces.com/profile/{quote(handle, safe='')}"
     st.link_button(f"Open {handle} on Codeforces ↗", profile_url)
-    st.download_button(
+    download_col1, download_col2 = st.columns(2)
+    download_col1.download_button(
         "Download rating history (CSV)",
         data=history.to_csv(index=False).encode("utf-8"),
         file_name=f"{handle}-rating-history.csv",
         mime="text/csv",
+        use_container_width=True,
+    )
+    download_col2.download_button(
+        "Download projected trend (CSV)",
+        data=forecast.future.to_csv(index=False).encode("utf-8"),
+        file_name=f"{handle}-rating-projection.csv",
+        mime="text/csv",
+        use_container_width=True,
     )
 
     c1, c2, c3, c4 = st.columns(4)
