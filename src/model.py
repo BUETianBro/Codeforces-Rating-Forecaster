@@ -28,6 +28,10 @@ def build_forecast(history: pd.DataFrame, future_contests: int = 20) -> Forecast
 
     x = history["contest_number"].to_numpy(dtype=float)
     y = history["rating"].to_numpy(dtype=float)
+    if not np.all(np.isfinite(x)) or not np.all(np.isfinite(y)):
+        raise ValueError("Contest numbers and ratings must be finite")
+    if np.any(x <= 0) or np.any(np.diff(x) <= 0):
+        raise ValueError("Contest numbers must be positive and strictly increasing")
 
     slope, intercept = np.polyfit(np.log2(x), y, 1)
     historical_prediction = _predict(x, slope, intercept)
