@@ -102,6 +102,13 @@ if run_forecast:
     st.plotly_chart(
         make_rating_chart(history, forecast, handle),
         use_container_width=True,
+        config={
+            "toImageButtonOptions": {
+                "format": "png",
+                "filename": f"{handle}-rating-forecast",
+                "scale": 2,
+            }
+        },
     )
 
     with st.expander("Model details"):
