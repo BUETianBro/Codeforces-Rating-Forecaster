@@ -8,6 +8,13 @@ from src.codeforces_api import CodeforcesAPIError, fetch_rating_history
 from src.model import build_forecast
 from src.visualization import make_rating_chart
 
+
+@st.cache_data(ttl=300, show_spinner=False)
+def load_rating_history(handle: str):
+    """Cache Codeforces responses briefly to avoid repeated API requests."""
+    return fetch_rating_history(handle)
+
+
 st.set_page_config(
     page_title="Codeforces Rating Forecaster",
     page_icon="📈",
@@ -48,7 +55,7 @@ if run_forecast:
 
     try:
         with st.spinner(f"Fetching rating history for {handle}..."):
-            history = fetch_rating_history(handle)
+            history = load_rating_history(handle)
     except CodeforcesAPIError as exc:
         st.error(str(exc))
         st.stop()
