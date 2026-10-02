@@ -6,6 +6,12 @@ import pandas as pd
 import requests
 
 API_URL = "https://codeforces.com/api/user.rating"
+API_HEADERS = {
+    "User-Agent": (
+        "Codeforces-Rating-Forecaster/1.0 "
+        "(+https://github.com/almuzahidseyam/Codeforces-Rating-Forecaster)"
+    )
+}
 DEFAULT_TIMEOUT_SECONDS = 15
 MIN_HANDLE_LENGTH = 3
 MAX_HANDLE_LENGTH = 24
@@ -57,6 +63,7 @@ def fetch_rating_history(handle: str) -> pd.DataFrame:
         response = requests.get(
             API_URL,
             params={"handle": clean_handle},
+            headers=API_HEADERS,
             timeout=DEFAULT_TIMEOUT_SECONDS,
         )
     except requests.Timeout as exc:
