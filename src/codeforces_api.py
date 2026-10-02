@@ -69,6 +69,9 @@ def fetch_rating_history(handle: str) -> pd.DataFrame:
             ) from http_exc
         raise CodeforcesAPIError("Codeforces returned an invalid response.") from exc
 
+    if not isinstance(payload, dict):
+        raise CodeforcesAPIError("Codeforces returned an invalid response.")
+
     if payload.get("status") != "OK":
         raise CodeforcesAPIError(_error_message(payload, clean_handle))
 
@@ -79,7 +82,10 @@ def fetch_rating_history(handle: str) -> pd.DataFrame:
             f"Codeforces returned HTTP {response.status_code}. Please try again."
         ) from exc
 
-    rows = payload.get("result", [])
+    rows = payload.get("result")
+    if not isinstance(rows, list) or any(not isinstance(item, dict) for item in rows):
+        raise CodeforcesAPIError("Codeforces returned an invalid rating history.")
+
     normalized = []
     for contest_number, item in enumerate(rows, start=1):
         normalized.append(
