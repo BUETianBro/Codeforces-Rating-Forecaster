@@ -30,3 +30,19 @@ def test_build_forecast_rejects_short_history() -> None:
 def test_build_forecast_rejects_zero_horizon() -> None:
     with pytest.raises(ValueError, match="at least 1"):
         build_forecast(sample_history(), future_contests=0)
+
+
+@pytest.mark.parametrize(
+    "contest_numbers, ratings, message",
+    [
+        ([1, 2, 3], [800, float("nan"), 900], "finite"),
+        ([1, 2, 3], [800, float("inf"), 900], "finite"),
+        ([1, 1, 3], [800, 850, 900], "strictly increasing"),
+        ([0, 1, 2], [800, 850, 900], "positive"),
+    ],
+)
+def test_build_forecast_rejects_invalid_history(contest_numbers, ratings, message) -> None:
+    history = pd.DataFrame({"contest_number": contest_numbers, "rating": ratings})
+
+    with pytest.raises(ValueError, match=message):
+        build_forecast(history)
