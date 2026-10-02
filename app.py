@@ -67,6 +67,7 @@ if run_forecast:
     forecast = build_forecast(history, future_contests=future_contests)
 
     current_rating = int(history.iloc[-1]["rating"])
+    latest_change = int(history.iloc[-1]["rating_change"])
     peak_rating = int(history["rating"].max())
     current_trend_rating = int(round(forecast.fitted.iloc[-1]["fitted_rating"]))
     projected_rating = int(round(forecast.future.iloc[-1]["projected_rating"]))
@@ -89,11 +90,12 @@ if run_forecast:
         use_container_width=True,
     )
 
-    c1, c2, c3, c4 = st.columns(4)
+    c1, c2, c3, c4, c5 = st.columns(5)
     c1.metric("Rated contests", len(history))
     c2.metric("Current rating", current_rating)
     c3.metric("Peak rating", peak_rating)
-    c4.metric(
+    c4.metric("Latest change", f"{latest_change:+d}")
+    c5.metric(
         f"Trend estimate after {future_contests}",
         projected_rating,
         delta=projected_rating - current_trend_rating,
