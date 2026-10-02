@@ -62,3 +62,14 @@ def test_fetch_rating_history_reports_missing_handle(monkeypatch) -> None:
 def test_fetch_rating_history_validates_handle_length() -> None:
     with pytest.raises(CodeforcesAPIError, match="between 3 and 24"):
         fetch_rating_history("ab")
+
+
+@pytest.mark.parametrize("payload", [[], {"status": "OK", "result": None}, {"status": "OK", "result": [1]}])
+def test_fetch_rating_history_rejects_malformed_payload(monkeypatch, payload) -> None:
+    monkeypatch.setattr(
+        "src.codeforces_api.requests.get",
+        lambda *args, **kwargs: FakeResponse(payload),
+    )
+
+    with pytest.raises(CodeforcesAPIError, match="invalid"):
+        fetch_rating_history("abc")
