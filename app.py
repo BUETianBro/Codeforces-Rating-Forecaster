@@ -138,6 +138,9 @@ if run_forecast:
 
     with st.expander("Recent rated contests"):
         recent = history.tail(15).sort_values("contest_number", ascending=False).copy()
+        recent["contest_url"] = recent["contest_id"].map(
+            lambda contest_id: f"https://codeforces.com/contest/{contest_id}"
+        )
         recent = recent.rename(
             columns={
                 "contest_number": "#",
@@ -147,6 +150,7 @@ if run_forecast:
                 "rating": "New rating",
                 "rating_change": "Change",
                 "rating_update_time": "Updated (UTC)",
+                "contest_url": "Round link",
             }
         )
         display_columns = [
@@ -157,11 +161,15 @@ if run_forecast:
             "New rating",
             "Change",
             "Updated (UTC)",
+            "Round link",
         ]
         st.dataframe(
             recent[display_columns],
             use_container_width=True,
             hide_index=True,
+            column_config={
+                "Round link": st.column_config.LinkColumn(display_text="Open round ↗")
+            },
         )
 else:
     st.subheader("How it works")
