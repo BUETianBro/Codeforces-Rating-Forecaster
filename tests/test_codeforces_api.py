@@ -1,7 +1,11 @@
 import requests
 import pytest
 
-from src.codeforces_api import CodeforcesAPIError, fetch_rating_history
+from src.codeforces_api import (
+    CodeforcesAPIError,
+    RATING_HISTORY_COLUMNS,
+    fetch_rating_history,
+)
 
 
 class FakeResponse:
@@ -43,6 +47,19 @@ def test_fetch_rating_history_normalizes_rows(monkeypatch) -> None:
     assert history.iloc[0]["contest_name"] == "Sample Round"
     assert history.iloc[0]["rating_change"] == 50
     assert history.iloc[0]["contest_number"] == 1
+
+
+def test_fetch_rating_history_preserves_schema_for_empty_result(monkeypatch) -> None:
+    payload = {"status": "OK", "result": []}
+    monkeypatch.setattr(
+        "src.codeforces_api.requests.get",
+        lambda *args, **kwargs: FakeResponse(payload),
+    )
+
+    history = fetch_rating_history("abc")
+
+    assert history.empty
+    assert tuple(history.columns) == RATING_HISTORY_COLUMNS
 
 
 def test_fetch_rating_history_reports_missing_handle(monkeypatch) -> None:

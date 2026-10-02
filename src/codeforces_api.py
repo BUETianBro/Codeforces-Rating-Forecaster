@@ -9,6 +9,16 @@ API_URL = "https://codeforces.com/api/user.rating"
 DEFAULT_TIMEOUT_SECONDS = 15
 MIN_HANDLE_LENGTH = 3
 MAX_HANDLE_LENGTH = 24
+RATING_HISTORY_COLUMNS = (
+    "contest_number",
+    "contest_id",
+    "contest_name",
+    "rank",
+    "old_rating",
+    "rating",
+    "rating_change",
+    "rating_update_time",
+)
 
 
 class CodeforcesAPIError(RuntimeError):
@@ -108,4 +118,4 @@ def fetch_rating_history(handle: str) -> pd.DataFrame:
             }
         )
 
-    return pd.DataFrame(normalized)
+    return pd.DataFrame(normalized, columns=RATING_HISTORY_COLUMNS)
